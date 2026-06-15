@@ -80,17 +80,6 @@ I comandi esatti per ogni passo sono in [`PIPELINE.md`](PIPELINE.md).
 
 ---
 
-## Risposta alle criticità metodologiche
-
-Questo studio è una riprogettazione rigorosa di un tentativo iniziale che presentava errori metodologici. Le correzioni:
-
-1. **Trasformazione PCAP→TSV esplicita.** L'intera catena parte dai PCAP grezzi ed è documentata e versionata (non si parte più direttamente dai TSV).
-2. **Byte inclusi noti e controllati.** Dopo l'ablazione i pacchetti contengono header IP+TCP (con indirizzi e porte azzerati) e payload azzerato o reale a seconda del braccio. Vedi `ablate_pcap.py`.
-3. **Scapy effettivamente utilizzato** per l'ablazione (`ablate_pcap.py`).
-4. **Niente taglio a lunghezza fissa.** Il vecchio approccio tagliava 104 byte fissi: scorretto perché gli header hanno lunghezza variabile. Ora Scapy separa dinamicamente header e payload sul singolo pacchetto.
-5. **Pre-training rifatto da zero** su entrambi i dataset modificati, prima del fine-tuning. Non si usano più corpus/vocab/pesi forniti dagli autori: in questo modo il modello, durante il pre-training, vede gli stessi dati che vedrà nel fine-tuning, eliminando il problema out-of-distribution che invalidava lo studio precedente.
-
----
 
 ## Contenuto del repository
 
