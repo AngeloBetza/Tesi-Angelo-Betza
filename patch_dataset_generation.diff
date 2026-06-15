@@ -1,0 +1,36 @@
+--- ET-BERT-orig/data_process/dataset_generation.py	2026-06-15 15:05:49.819879013 +0000
++++ /home/abetza/ET-BERT-main/data_process/dataset_generation.py	2026-06-08 16:05:56.710606867 +0000
+@@ -106,7 +106,7 @@
+             packet_data = packets[packet_index].copy()
+             data = (binascii.hexlify(bytes(packet_data)))
+             
+-            packet_string = data.decode()[:2*payload_len]
++            packet_string = data.decode()[28:28+2*payload_len]
+             
+             if packet_index == 0:
+                 burst_data_string += packet_string
+@@ -144,7 +144,7 @@
+             packet_data = packet.copy()
+             data = (binascii.hexlify(bytes(packet_data)))
+             packet_string = data.decode()
+-            new_packet_string = packet_string[76:]
++            new_packet_string = packet_string[28:]
+             packet_data_string += bigram_generation(new_packet_string, packet_len=payload_len, flag = True)
+             break
+ 
+@@ -196,13 +196,13 @@
+         if packet_count == payload_pac:
+             packet_data = packet.copy()
+             data = (binascii.hexlify(bytes(packet_data)))
+-            packet_string = data.decode()[76:]
++            packet_string = data.decode()[28:]
+             flow_data_string += bigram_generation(packet_string, packet_len=payload_len, flag = True)
+             break
+         else:
+             packet_data = packet.copy()
+             data = (binascii.hexlify(bytes(packet_data)))
+-            packet_string = data.decode()[76:]
++            packet_string = data.decode()[28:]
+             flow_data_string += bigram_generation(packet_string, packet_len=payload_len, flag = True)
+     feature_data.append(flow_data_string)
+ 

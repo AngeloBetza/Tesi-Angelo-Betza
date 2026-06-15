@@ -1,0 +1,50 @@
+--- ET-BERT-orig/vocab_process/main.py	2026-06-15 15:05:49.884879357 +0000
++++ /home/abetza/ET-BERT-main/vocab_process/main.py	2026-06-09 14:10:17.076186050 +0000
+@@ -20,7 +20,7 @@
+ pcap_name = "app_A.pcap"
+ #pcap_name = "merge.pcap"
+ 
+-word_dir = "I:/corpora/"
++word_dir = "./datasets/"
+ word_name = "encrypted_tls13_burst.txt"
+ 
+ vocab_dir = "I:/models/"
+@@ -48,9 +48,9 @@
+     
+     for parent,dirs,files in os.walk(pcap_dir):
+         for file in files:
+-            if "pcapng" not in file and tls13_name in file:
++            if file.endswith(".pcap"):
+                 n += 1
+-                pcap_name = parent + "\\" + file
++                pcap_name = parent + "/" + file
+                 print("No.%d pacp is processed ... %s ..."%(n,file))
+                 packets = scapy.rdpcap(pcap_name)
+                 #word_packet = b''
+@@ -120,7 +120,7 @@
+     # Customize pre-tokenization and decoding
+     tokenizer.pre_tokenizer = pre_tokenizers.BertPreTokenizer()
+     tokenizer.decoder = decoders.WordPiece()
+-    tokenizer.post_processor = processors.BertProcessing(sep=("[SEP]",1),cls=('[CLS]',2))
++    tokenizer.post_processor = processors.BertProcessing(("[SEP]",1), ('[CLS]',2))
+ 
+     # And then train
+     trainer = trainers.WordPieceTrainer(vocab_size=65536, min_frequency=2)
+@@ -138,7 +138,7 @@
+     vocab_txt = ["[PAD]","[SEP]","[CLS]","[UNK]","[MASK]"]
+     for item in vocab_json['model']['vocab']:
+         vocab_txt.append(item) # append key of vocab_json
+-    with open(vocab_dir+vocab_name,'w') as f:
++    with open("/home/abetza/ET-BERT-main/datasets/dataset_ablato_vocab.txt", 'w') as f:
+         for word in vocab_txt:
+             f.write(word+"\n")
+     return 0
+@@ -204,7 +204,7 @@
+     return 0
+ 
+ if __name__ == '__main__':
+-    #preprocess(pcap_dir)
++    #preprocess("/home/abetza/tesi_etbert/dataset_ablato_solo_header")
+     # build vocab
+     build_BPE()
+     build_vocab()

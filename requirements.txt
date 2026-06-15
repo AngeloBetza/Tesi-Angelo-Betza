@@ -1,0 +1,4 @@
+scapy>=2.5.0
+scikit-learn>=1.0
+xlrd>=2.0.1
+numpy>=1.21
