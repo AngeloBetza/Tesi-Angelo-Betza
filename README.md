@@ -1,6 +1,6 @@
 # Ablation Study su ET-BERT: gli header di rete bastano per classificare il traffico cifrato?
 
-Questo repository contiene il codice e le istruzioni per riprodurre lo studio di ablazione condotto sul modello **ET-BERT** ([Lin et al., WWW 2022](https://github.com/linwhitehat/ET-BERT)) per la tesi di laurea di Angelo Betza.
+Questo repository contiene il codice e le istruzioni per riprodurre lo studio di ablazione condotto sul modello **ET-BERT** ([Lin et al., WWW 2022](https://github.com/linwhitehat/ET-BERT)).
 
 ## Domanda di ricerca
 
