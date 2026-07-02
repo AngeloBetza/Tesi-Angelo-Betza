@@ -27,19 +27,56 @@ def zero_l4_payload(pkt):
             l4.remove_payload()
             l4.add_payload(Raw(load=b"\x00" * n))
 
-def process_packet(pkt, zero_payload):
+def zero_header_fields(pkt):
+    # Azzera i campi informativi degli header, tenendo il payload reale.
+    if IP in pkt:
+        pkt[IP].ttl = 0
+        pkt[IP].id = 0
+        pkt[IP].tos = 0
+        pkt[IP].flags = 0
+        pkt[IP].frag = 0
+        if pkt[IP].chksum is not None: del pkt[IP].chksum
+    if IPv6 in pkt:
+        pkt[IPv6].hlim = 0
+        pkt[IPv6].fl = 0
+        pkt[IPv6].tc = 0
+    if TCP in pkt:
+        pkt[TCP].seq = 0
+        pkt[TCP].ack = 0
+        pkt[TCP].window = 0
+        pkt[TCP].flags = 0
+        pkt[TCP].options = []
+        if pkt[TCP].chksum is not None: del pkt[TCP].chksum
+    elif UDP in pkt:
+        pkt[UDP].len = None  # ricalcolato da Scapy
+        if pkt[UDP].chksum is not None: del pkt[UDP].chksum
+
+def process_packet(pkt, mode):
     neutralize_identifiers(pkt)
-    if zero_payload:
+    if mode == "header-only":
         zero_l4_payload(pkt)
+    elif mode == "payload-only":
+        zero_header_fields(pkt)
+    # mode == "full": non tocca altro
     return pkt.__class__(bytes(pkt))
 
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("input_dir")
     ap.add_argument("output_dir")
-    ap.add_argument("--keep-payload", action="store_true")
+    ap.add_argument("--keep-payload", action="store_true",
+                    help="Braccio FULL: mantiene payload reale (azzera solo IP/porte)")
+    ap.add_argument("--zero-headers", action="store_true",
+                    help="Braccio PAYLOAD-ONLY: azzera i campi header, tiene il payload reale")
     args = ap.parse_args()
-    zero_payload = not args.keep_payload
+
+    if args.zero_headers:
+        mode = "payload-only"
+    elif args.keep_payload:
+        mode = "full"
+    else:
+        mode = "header-only"
+
     n_files = n_pkts = n_passthrough = 0
     for root, _dirs, files in os.walk(args.input_dir):
         for fname in files:
@@ -53,15 +90,18 @@ def main():
                 with PcapReader(in_path) as reader, PcapWriter(out_path, append=False) as writer:
                     for pkt in reader:
                         try:
-                            writer.write(process_packet(pkt, zero_payload))
+                            writer.write(process_packet(pkt, mode))
                             n_pkts += 1
                         except Exception:
                             writer.write(pkt); n_passthrough += 1
                 n_files += 1
             except Exception as e:
                 print(f"[ERRORE] {in_path}: {e}")
-    mode = "FULL (payload mantenuto)" if args.keep_payload else "HEADER-ONLY (payload azzerato)"
-    print(f"Modalita': {mode}")
+
+    labels = {"full": "FULL (payload reale)",
+              "header-only": "HEADER-ONLY (payload azzerato)",
+              "payload-only": "PAYLOAD-ONLY (header azzerati)"}
+    print(f"Modalita': {labels[mode]}")
     print(f"File: {n_files} | Modificati: {n_pkts} | Intatti: {n_passthrough}")
 
 if __name__ == "__main__":
