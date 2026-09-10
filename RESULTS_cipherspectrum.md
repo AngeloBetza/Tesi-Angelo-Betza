@@ -35,12 +35,6 @@ Il risultato è l'**opposto** di quanto osservato su Cross-Platform:
 La conclusione "per classificare bastano gli header" dei lavori originali **non è universale**:
 dipende dal dataset e dal metodo di cattura.
 
-## Perché gli header di CipherSpectrum portano poco segnale
-
-Misura diretta sui pacchetti di risposta del server: su 58 posizioni-byte dell'header,
-**solo 13 (22%) variano tra i domini**; le altre 45 (78%) sono costanti per tutti i siti.
-Probabile effetto dell'ambiente di cattura virtualizzato e uniforme (stesso client,
-stesso stack di rete per tutte le catture).
 
 ## Nota importante sul payload cifrato
 
